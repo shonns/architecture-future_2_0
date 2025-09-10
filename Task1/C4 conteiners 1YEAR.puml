@@ -1,0 +1,101 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Акторы
+Person(business_user, "Бизнес-пользователь", "Сотрудник головного офиса, использует витрину данных и BI")
+Person(clinic_operator, "Медицинский работник", "Работает с медицинской системой и легаси-интерфейсом")
+Person(fintech_user, "Финтех-специалист", "Работает с финансовыми сервисами")
+Person(ai_analyst, "Аналитик ИИ", "Использует ИИ-сервисы для анализа медицинских данных")
+Person(pharma_partner, "Фармацевтическая компания", "Интеграция через API")
+Person(electronics_partner, "Компания по электронике", "Интеграция через API")
+Person(admin, "Администратор", "Управляет доступами и настройками")
+
+' Головной офис
+System_Boundary(domain_ГО, "Головной офис (ГО)") {
+    Container(data_portal, "Витрина данных", "Web-приложение", "Портал самообслуживания для отчётов")
+    Container(bi, "BI-система", "Power BI", "Визуализация и анализ данных")
+    Container(ГО_api, "API Gateway ГО", "API Gateway", "Локальный шлюз интеграции головного офиса")
+
+    Container_Boundary(dwh_boundary, "Data Lake House") {
+        Container(raw_storage, "Raw Storage", "MinIO/Snowflake", "Хранилище сырых данных")
+        Container(processing_layer, "Processing Layer", "ETL/ELT", "Обработка и трансформация данных")
+        Container(data_marts, "Data Marts", "SQL/OLAP", "Витрины данных для аналитики и BI")
+        Container(metadata, "Metadata & Access Management", "Service", "Управление метаданными и доступами")
+    }
+}
+
+' Клиники
+System_Boundary(domain_clinic, "Клиники") {
+    Container(legacy, "Легаси-система", "Power Builder", "Старый интерфейс для операторов")
+    Container(medical_core, "Медицинская система", "Frontend/Backend", "Управление клиентами, персоналом, инвентаризацией")
+    Container(clinic_api, "API Gateway Clinic", "API Gateway", "Локальный шлюз интеграции клиник")
+}
+
+' ИИ-компания
+System_Boundary(domain_ai, "ИИ-компания") {
+    Container(ai_services, "ИИ-сервисы", "Python", "Аналитика медицинских данных, ML-модели")
+    Container(ai_api, "API Gateway AI", "API Gateway", "Локальный шлюз интеграции ИИ-компании")
+}
+
+' Финтех-компания
+System_Boundary(domain_fintech, "Финтех-компания") {
+    Container(fintech, "Финтех-сервисы", "Golang/Java", "Финансовые операции, кредиты, счета")
+    Container(fintech_api, "API Gateway Fintech", "API Gateway", "Локальный шлюз интеграции финтех-компании")
+}
+
+' Внешние партнёры
+System_Boundary(domain_external, "Внешние компании") {
+    Container(pharma_api, "API фармацевтической компании", "REST API", "Интеграция с фармацевтическими компаниями")
+    Container(electronics_api, "API компании по электронике", "REST API", "Интеграция с производителями электроники")
+}
+
+' Общий слой интеграции
+Container(global_integration, "Global Integration Layer", "Apache Camel / API Gateway", "Междоменные и внешние интеграции")
+
+' Взаимодействие акторов с системами
+Rel(business_user, data_portal, "Запрос и конструирование отчётов")
+Rel(business_user, bi, "Просмотр визуализаций")
+Rel(clinic_operator, legacy, "Работа с медицинскими данными")
+Rel(clinic_operator, medical_core, "Управление клиентами и инвентаризацией")
+Rel(fintech_user, fintech, "Работа с финансовыми продуктами")
+Rel(ai_analyst, ai_services, "Запуск аналитики, обучение моделей")
+Rel(admin, data_portal, "Управление доступами")
+Rel(admin, metadata, "Администрирование метаданных и доступов")
+Rel(pharma_partner, pharma_api, "Обмен данными по API")
+Rel(electronics_partner, electronics_api, "Обмен данными по API")
+
+' Взаимодействие внутри доменов через локальные API Gateway
+Rel(data_portal, ГО_api, "Запросы к локальным сервисам ГО")
+Rel(bi, ГО_api, "Запросы к Data Lake House через API Gateway ГО")
+Rel(ГО_api, data_marts, "Доступ к витринам данных")
+Rel(ГО_api, metadata, "Запросы на управление доступами")
+Rel(processing_layer, raw_storage, "Чтение/загрузка сырых данных")
+Rel(processing_layer, data_marts, "Загрузка обработанных данных")
+Rel(metadata, raw_storage, "Управление доступом к данным")
+Rel(metadata, data_marts, "Управление доступом к витринам")
+
+Rel(clinic_operator, clinic_api, "Запросы к медицинским сервисам")
+Rel(clinic_api, legacy, "Доступ к легаси-системе")
+Rel(clinic_api, medical_core, "Доступ к медицинской системе")
+
+Rel(fintech_user, fintech_api, "Запросы к финтех-сервисам")
+Rel(fintech_api, fintech, "Доступ к финтех-сервисам")
+
+Rel(ai_analyst, ai_api, "Запросы к ИИ-сервисам")
+Rel(ai_api, ai_services, "Доступ к ИИ-сервисам")
+
+' Междоменные и внешние интеграции через Global Integration Layer
+Rel(ГО_api, global_integration, "Междоменные запросы")
+Rel(clinic_api, global_integration, "Междоменные запросы")
+Rel(fintech_api, global_integration, "Междоменные запросы")
+Rel(ai_api, global_integration, "Междоменные запросы")
+Rel(global_integration, pharma_api, "Интеграция с фармацевтическими компаниями")
+Rel(global_integration, electronics_api, "Интеграция с производителями электроники")
+
+' Взаимодействие между доменами через Global Integration Layer
+Rel(global_integration, ГО_api, "Доступ к данным ГО")
+Rel(global_integration, clinic_api, "Доступ к медицинским данным")
+Rel(global_integration, fintech_api, "Доступ к финтех-сервисам")
+Rel(global_integration, ai_api, "Доступ к ИИ-сервисам")
+
+@enduml
