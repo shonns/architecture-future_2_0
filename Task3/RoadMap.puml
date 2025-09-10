@@ -1,0 +1,56 @@
+@startuml
+skinparam backgroundColor #FAFAFA
+skinparam rectangle {
+  BackgroundColor #E3F2FD
+  BorderColor #1976D2
+}
+
+title Роадмап изменений IT-ландшафта "Будущее 2.0"
+
+start
+
+:Аудит текущих систем и разделение на домены;
+note right
+Срок: 1-2 месяца
+Команды: Архитекторы, бизнес-аналитики
+Ресурсы: PlantUML, draw.io, Confluence, интервью с бизнесом
+end note
+
+:Внедрение API Gateway и интеграционного слоя;
+note right
+Срок: 2-4 месяца
+Команды: DevOps, backend, интеграционная команда
+Ресурсы: Kong, Apache Camel, REST/gRPC, CI/CD
+end note
+
+:Миграция DWH на Data Lake House;
+note right
+Срок: 4-8 месяцев
+Команды: Data Engineering, BI
+Ресурсы: MiniO/Snowflake, ETL/ELT
+end note
+
+:Внедрение нового BI и портала витрины данных;
+note right
+Срок: 6-10 месяцев
+Команды: BI, frontend, аналитики
+Ресурсы: Power BI, Tableau, Data Mart, UX/UI
+end note
+
+:Автоматизация ИИ сервисов;
+note right
+Срок: 8-12 месяцев
+Команды: Data Science, ML Engineering
+Ресурсы: MLflow, AutoML, Python, GPU/Cloud
+end note
+
+:Усиление безопасности;
+note right
+Срок: 10-12 месяцев
+Команды: Aрхитекторы, Отдел информационной безопасности
+Ресурсы: IAM, RBAC, Data Masking, аудит, обучение
+end note
+
+stop
+
+@enduml

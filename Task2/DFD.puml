@@ -1,0 +1,38 @@
+@startuml
+skinparam rectangle {
+    BackgroundColor<<ГО>> #E3F2FD
+    BackgroundColor<<Клиники>> #E8F5E9
+    BackgroundColor<<ИИ-компания>> #FFF3E0
+    BackgroundColor<<Финтех-компания>> #F3E5F5
+    BorderColor black
+}
+
+rectangle "Головной офис (Бизнес-аналитика, отчёты, доступы)" <<ГО>> as HQ
+rectangle " (Медицинские процессы, инвентаризация, персонал)" <<Клиники>> as Clinic
+rectangle "(Аналитика, ML)" <<ИИ-компания >> as AI
+rectangle " (Финансы, кредиты, счета)" <<Финтех-компания>> as Fintech
+
+rectangle "Внешние компании" as External {
+    rectangle "Фармацевтические компании" as Pharma
+    rectangle "Компания по электронике" as Electronics
+}
+
+HQ -down-> Clinic : Запрос агрегированных данных (без мед. карт)
+Clinic -up-> HQ : Данные по клиентам, инвентаризации, персоналу
+
+HQ -down-> Fintech : Запрос финансовых данных
+Fintech -up-> HQ : Финансовые операции, кредиты, счета
+
+Clinic -right-> AI : Обезличенные мед. данные
+AI -left-> Clinic : Результаты аналитики
+
+Fintech -right-> Pharma : Заказы на лекарства
+Pharma -left-> Fintech : Поставки, счета
+
+Clinic --> Electronics : Заказы на оборудование
+Electronics -left-> Clinic : Поставки, сервис
+
+HQ -right-> Pharma : Аналитика закупок
+HQ -right-> Electronics : Аналитика по оборудованию
+
+@enduml
